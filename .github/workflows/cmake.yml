@@ -112,7 +112,6 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: powershell
       run: |
-        mkdir "nabe_x64_${{runner.os}}"
         Copy-Item "Release/nabe.exe" -Destination ".\nabe_x64_${{runner.os}}"
         Compress-Archive -Path ".\nabe_x64_${{runner.os}}" -DestinationPath ".\nabe_x64_${{runner.os}}.zip"
     

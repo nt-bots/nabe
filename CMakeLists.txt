@@ -31,7 +31,7 @@ add_executable(${PROJECT_NAME}
                include/print_helpers.cpp
                include/python_auto_initializer.cpp
 
-               include/thirdparty/KeyValues/keyvalues.cpp
+               include/thirdparty/KeyValues/src/keyvalues.cpp
 
                include/thirdparty/source-sdk-stubs/nav.cpp
                include/thirdparty/source-sdk-stubs/nav_area.cpp

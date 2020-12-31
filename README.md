@@ -7,7 +7,7 @@ See the file [LICENSE.md](LICENSE.md) in this repository for details.
 
 ## Installing
 
-### TODO: Add builds
+You can find builds in the [Releases page](https://github.com/nt-bots/nabe/releases), or you can build it yourself with the instructions below.
 
 ## Building
 

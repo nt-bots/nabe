@@ -1,0 +1,6 @@
+[submodule "include\\thirdparty\\KeyValues"]
+	path = include\\thirdparty\\KeyValues
+	url = https://github.com/nt-bots/KeyValues
+[submodule "include\\thirdparty\\LeksysINI"]
+	path = include\\thirdparty\\LeksysINI
+	url = https://github.com/nt-bots/LeksysINI

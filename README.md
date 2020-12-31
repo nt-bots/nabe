@@ -4,7 +4,7 @@
 
 * C++17 compatible compiler
 
-Make sure you have [CMake](https://cmake.org/) instatlled, and [SQLite3](https://www.sqlite.org) & [Python (3)](https://www.python.org/) headers and libraries available.
+Make sure you have [CMake](https://cmake.org/) installed, and [SQLite3](https://www.sqlite.org) & [Python (3)](https://www.python.org/) headers and libraries available.
 
 If you're building on Windows with Visual Studio, note that CMake can also be integrated to the IDE instead of installing it separately.
 

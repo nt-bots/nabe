@@ -84,8 +84,8 @@ jobs:
         cp LICENSE.md ${{runner.workspace}}/build
         cp OpenSourceLicenses.md ${{runner.workspace}}/build
         cp build/config.ini ${{runner.workspace}}/build
-        cp build/nav ${{runner.workspace}}/build
-        cp build/scripts ${{runner.workspace}}/build
+        cp -r build/nav ${{runner.workspace}}/build
+        cp -r build/scripts ${{runner.workspace}}/build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'

@@ -2,6 +2,9 @@
 
 *"Navigate A → B Externally"* — An external pathfinder for accompanying the SRCDS server side NT Bots plugin. WIP.
 
+## License
+See the file [LICENSE.md](LICENSE.md) in this repository for details.
+
 ## Installing
 
 ### TODO: Add builds

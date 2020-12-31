@@ -68,3 +68,11 @@ The author disclaims copyright to this source code. In place of a legal notice, 
     May you share freely, never taking more than you give.
 
 ```
+
+### [CMake FindFilesystem module](https://github.com/vector-of-bool/CMakeCM/blob/master/modules/FindFilesystem.cmake) — This module supports the C++17 standard library's filesystem utilities:
+
+```
+Distributed under the OSI-approved BSD 3-Clause License.  See accompanying
+file Copyright.txt or https://cmake.org/licensing for details.
+
+```

@@ -1,6 +1,6 @@
 # NABE
 
-*Navigate A → B Externally* — An external pathfinder for accompanying the NT Bots plugin. WIP.
+*"Navigate A → B Externally"* — An external pathfinder for accompanying the NT Bots plugin. WIP.
 
 ## Installing
 

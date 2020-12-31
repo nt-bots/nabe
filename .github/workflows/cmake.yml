@@ -76,27 +76,29 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
     
-    - name: Add release documentation
+    - name: Add other build components
       shell: bash
       run: |
-        dir ${{runner.workspace}}
-        cp ${{runner.workspace}}/README.md ${{runner.workspace}}/build
-        cp ${{runner.workspace}}/LICENSE.md ${{runner.workspace}}/build
-        cp ${{runner.workspace}}/OpenSourceLicenses.md ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/README.md ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/LICENSE.md ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/OpenSourceLicenses.md ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/build/config.ini ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/build/nav ${{runner.workspace}}/build
+        cp ${{env.GITHUB_WORKSPACE}}/build/scripts ${{runner.workspace}}/build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip nabe_x64_${{runner.os}}.zip nabe config.ini scripts nav README.md
+      run: zip nabe_x64_${{runner.os}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
     
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        cp ./Release/nabe.exe .
-        zip nabe_x64_${{runner.os}}.zip nabe.exe config.ini scripts nav README.md LICENSE.md OpenSourceLicenses.md
+        cp ${{runner.workspace}}/build/Release/nabe.exe ${{runner.workspace}}/build
+        zip nabe_x64_${{runner.os}}.zip nabe.exe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
     
     - name: Create Release
       id: create_release

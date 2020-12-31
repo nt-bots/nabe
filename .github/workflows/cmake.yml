@@ -78,13 +78,14 @@ jobs:
     
     - name: Add other build components
       shell: bash
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        cp ${{env.GITHUB_WORKSPACE}}/README.md ${{runner.workspace}}/build
-        cp ${{env.GITHUB_WORKSPACE}}/LICENSE.md ${{runner.workspace}}/build
-        cp ${{env.GITHUB_WORKSPACE}}/OpenSourceLicenses.md ${{runner.workspace}}/build
-        cp ${{env.GITHUB_WORKSPACE}}/build/config.ini ${{runner.workspace}}/build
-        cp ${{env.GITHUB_WORKSPACE}}/build/nav ${{runner.workspace}}/build
-        cp ${{env.GITHUB_WORKSPACE}}/build/scripts ${{runner.workspace}}/build
+        cp README.md ${{runner.workspace}}/build
+        cp LICENSE.md ${{runner.workspace}}/build
+        cp OpenSourceLicenses.md ${{runner.workspace}}/build
+        cp build/config.ini ${{runner.workspace}}/build
+        cp build/nav ${{runner.workspace}}/build
+        cp build/scripts ${{runner.workspace}}/build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
@@ -97,7 +98,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        cp ${{runner.workspace}}/build/Release/nabe.exe ${{runner.workspace}}/build
+        cp Release/nabe.exe .
         zip nabe_x64_${{runner.os}}.zip nabe.exe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
     
     - name: Create Release

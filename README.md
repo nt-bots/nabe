@@ -12,7 +12,8 @@ If you're building on Windows with Visual Studio, note that CMake can also be in
 
 Then, run the following commands in the repo path.
 ```
-cd build
+git clone --recurse-submodules this-repository-url
+cd inside-this-repo && cd build
 cmake ..
 cmake --build .
 ```

@@ -77,7 +77,7 @@ file Copyright.txt or https://cmake.org/licensing for details.
 
 ```
 
-###[msvc-dev-cmd](https://github.com/ilammy/msvc-dev-cmd) — GitHub Action to setup Developer Command Prompt for Microsoft Visual C++:
+### [msvc-dev-cmd](https://github.com/ilammy/msvc-dev-cmd) — GitHub Action to setup Developer Command Prompt for Microsoft Visual C++:
 
 ```
 Copyright 2019 ilammy

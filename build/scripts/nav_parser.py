@@ -11,7 +11,7 @@ import os
 from struct import unpack
 
 # https://github.com/gorgitko/valve-keyvalues-python
-from valve_keyvalues_python.keyvalues import KeyValues
+from valve-keyvalues-python/valve_keyvalues_python.keyvalues import KeyValues
 
 # Whether print(...) lines in this file should produce standard output.
 PRINT_DEBUG = False

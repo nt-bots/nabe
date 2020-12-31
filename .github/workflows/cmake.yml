@@ -79,9 +79,9 @@ jobs:
     - name: Add release documentation
       shell: bash
       run: |
-        cp ${{runner.workspace}}/../README.md ${{runner.workspace}}/build
-        cp ${{runner.workspace}}/../LICENSE.md ${{runner.workspace}}/build
-        cp ${{runner.workspace}}/../OpenSourceLicenses.md ${{runner.workspace}}/build
+        cp ${{runner.workspace}}/README.md ${{runner.workspace}}/build
+        cp ${{runner.workspace}}/LICENSE.md ${{runner.workspace}}/build
+        cp ${{runner.workspace}}/OpenSourceLicenses.md ${{runner.workspace}}/build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'

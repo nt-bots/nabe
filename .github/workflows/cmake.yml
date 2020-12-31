@@ -98,8 +98,8 @@ jobs:
         copy LICENSE.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
         copy OpenSourceLicenses.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
         copy build/config.ini "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        xcopy /E build\nav "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        xcopy /E build\scripts "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        xcopy /E build\nav "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\nav"
+        xcopy /E build\scripts "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\scripts"
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'

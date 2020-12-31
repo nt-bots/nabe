@@ -9,6 +9,8 @@ build/include
 out/
 CMakeSettings.json
 
+include/thirdparty/sqlite-amalgamation
+
 *.kv
 
 *.sln

@@ -97,8 +97,8 @@ jobs:
         copy LICENSE.md ${{runner.workspace}}\build
         copy OpenSourceLicenses.md ${{runner.workspace}}\build
         copy build/config.ini ${{runner.workspace}}\build
-        copy build/nav ${{runner.workspace}}\build
-        copy build/scripts ${{runner.workspace}}\build
+        xcopy /E build/nav ${{runner.workspace}}\build
+        xcopy /E build/scripts ${{runner.workspace}}\build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'

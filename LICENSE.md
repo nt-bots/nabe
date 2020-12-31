@@ -2,7 +2,7 @@
 
 Some of the code in this project is based on the [Source 1 engine](https://github.com/ValveSoftware/source-sdk-2013), and is used under the SOURCE 1 SDK LICENSE.
 
-Before using code in this repository, please see the SOURCE 1 SDK license terms below.
+Before using code in this repository, please review the SOURCE 1 SDK license terms below.
 
 This project also contains some other code under various open source licenses; please see the file [OpenSourceLicenses.md](OpenSourceLicenses.md) for a listing.
 

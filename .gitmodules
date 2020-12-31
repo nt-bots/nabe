@@ -4,3 +4,6 @@
 [submodule "LeksysINI"]
 	path = include/thirdparty/LeksysINI
 	url = https://github.com/nt-bots/LeksysINI
+[submodule "valve-keyvalues-python"]
+	path = build/scripts/valve-keyvalues-python
+	url = https://github.com/nt-bots/valve-keyvalues-python

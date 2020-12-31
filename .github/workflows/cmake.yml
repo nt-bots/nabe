@@ -76,7 +76,8 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
     
-    - name: Add other build components
+    - name: Add other build components  (Linux)
+      if: runner.os == 'Linux'
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
@@ -86,6 +87,18 @@ jobs:
         cp build/config.ini ${{runner.workspace}}/build
         cp -r build/nav ${{runner.workspace}}/build
         cp -r build/scripts ${{runner.workspace}}/build
+        
+    - name: Add other build components  (Windows)
+      if: runner.os == 'Windows'
+      shell: cmd
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: |
+        copy README.md ${{runner.workspace}}\build
+        copy LICENSE.md ${{runner.workspace}}\build
+        copy OpenSourceLicenses.md ${{runner.workspace}}\build
+        copy build/config.ini ${{runner.workspace}}\build
+        copy -r build/nav ${{runner.workspace}}\build
+        copy -r build/scripts ${{runner.workspace}}\build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'

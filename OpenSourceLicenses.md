@@ -1,6 +1,8 @@
 # Open Source licenses information
 
-**Some of the code in this project is based on the [Source 1 engine](https://github.com/ValveSoftware/source-sdk-2013), and is used under the SOURCE 1 SDK LICENSE. For the full license information, please see the main [LICENSE.md](LICENSE.md) file in this repository.**
+**NOTE:** Some of the code in this project is based on the [Source 1 engine](https://github.com/ValveSoftware/source-sdk-2013), and is used under the SOURCE 1 SDK LICENSE.
+
+**Please see the full licensing information in the main [LICENSE.md](LICENSE.md) file before using this repository!**
 
 ## Other licenses used in this software
 

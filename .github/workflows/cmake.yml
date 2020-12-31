@@ -88,3 +88,4 @@ jobs:
           Automated release. WIP.
         draft: true
         prerelease: true
+

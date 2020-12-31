@@ -93,26 +93,28 @@ jobs:
       shell: cmd
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        copy README.md ${{runner.workspace}}\build
-        copy LICENSE.md ${{runner.workspace}}\build
-        copy OpenSourceLicenses.md ${{runner.workspace}}\build
-        copy build/config.ini ${{runner.workspace}}\build
-        xcopy /E build\nav ${{runner.workspace}}\build
-        xcopy /E build\scripts ${{runner.workspace}}\build
+        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        copy README.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        copy LICENSE.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        copy OpenSourceLicenses.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        copy build/config.ini "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        xcopy /E build\nav "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        xcopy /E build\scripts "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip nabe_x64_${{runner.os}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+      run: zip -r nabe_x64_${{runner.os}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
     
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
-      shell: bash
+      shell: powershell
       run: |
-        cp Release/nabe.exe .
-        zip nabe_x64_${{runner.os}}.zip nabe.exe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+        mkdir "nabe_x64_${{runner.os}}"
+        Copy-Item "Release/nabe.exe" -Destination ".\nabe_x64_${{runner.os}}"
+        Compress-Archive -Path ".\nabe_x64_${{runner.os}}" -DestinationPath ".\nabe_x64_${{runner.os}}.zip"
     
     - name: Create Release
       id: create_release

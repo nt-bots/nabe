@@ -23,7 +23,7 @@ cmake --build .
 #### Compiling the [SQLite3 library](https://www.sqlite.org)
 
 * See the SQLite website for amalgamation releases, or instructions on building them from source.
-* Generate the amalgamation to the path indicated by CMakeLists.txt.
+* Place the amalgamation files to the path indicated by CMakeLists.txt.
 
 Example tools for building the statically linked SQLite3 library for MSVC:
 * x64 Native Tools Command Prompt for VS 2019

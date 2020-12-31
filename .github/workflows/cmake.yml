@@ -76,6 +76,14 @@ jobs:
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
     
+    - name: Add release documentation
+      working-directory: ${{runner.workspace}}/build
+      shell: bash
+      run: |
+        cp ../README.md .
+        cp ../LICENSE.md .
+        cp ../OpenSourceLicenses.md .
+    
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
@@ -87,7 +95,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        mv ./Release/nabe.exe .
+        cp ./Release/nabe.exe .
         zip --junk-paths nabe_x64_${{runner.os}}.zip nabe.exe config.ini scripts nav README.md
     
     - name: Create Release

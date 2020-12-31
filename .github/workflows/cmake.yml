@@ -79,6 +79,7 @@ jobs:
     - name: Add release documentation
       shell: bash
       run: |
+        dir ${{runner.workspace}}
         cp ${{runner.workspace}}/README.md ${{runner.workspace}}/build
         cp ${{runner.workspace}}/LICENSE.md ${{runner.workspace}}/build
         cp ${{runner.workspace}}/OpenSourceLicenses.md ${{runner.workspace}}/build

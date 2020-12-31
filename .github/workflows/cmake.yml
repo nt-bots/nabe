@@ -77,18 +77,17 @@ jobs:
       run: cmake --build . --config $BUILD_TYPE
     
     - name: Add release documentation
-      working-directory: ${{runner.workspace}}/build
       shell: bash
       run: |
-        cp ../README.md .
-        cp ../LICENSE.md .
-        cp ../OpenSourceLicenses.md .
+        cp ${{runner.workspace}}/../README.md ${{runner.workspace}}/build
+        cp ${{runner.workspace}}/../LICENSE.md ${{runner.workspace}}/build
+        cp ${{runner.workspace}}/../OpenSourceLicenses.md ${{runner.workspace}}/build
     
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip --junk-paths nabe_x64_${{runner.os}}.zip nabe config.ini scripts nav README.md
+      run: zip nabe_x64_${{runner.os}}.zip nabe config.ini scripts nav README.md
     
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
@@ -96,7 +95,7 @@ jobs:
       shell: bash
       run: |
         cp ./Release/nabe.exe .
-        zip --junk-paths nabe_x64_${{runner.os}}.zip nabe.exe config.ini scripts nav README.md
+        zip nabe_x64_${{runner.os}}.zip nabe.exe config.ini scripts nav README.md LICENSE.md OpenSourceLicenses.md
     
     - name: Create Release
       id: create_release

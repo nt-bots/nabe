@@ -94,6 +94,8 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
+        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\nav"
+        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\scripts"
         copy README.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
         copy LICENSE.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
         copy OpenSourceLicenses.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"

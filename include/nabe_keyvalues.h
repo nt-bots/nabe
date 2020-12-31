@@ -1,7 +1,7 @@
 #ifndef NABENABE_KEYVALUES_H
 #define NABENABE_KEYVALUES_H
 
-#include "thirdparty/KeyValues/keyvalues.hpp"
+#include "thirdparty/KeyValues/src/keyvalues.hpp"
 
 #include <string>
 #include <vector>

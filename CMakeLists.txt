@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.19)
 
 project(nabe VERSION 2020.12.31)
 
@@ -43,7 +43,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-find_package(PythonLibs 3.2 REQUIRED)
+find_package(PythonLibs 3.2<4.0 REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 

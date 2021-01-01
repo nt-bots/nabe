@@ -7,7 +7,6 @@ set(NABE_BUILD_ARCH x64)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
-set(Python_USE_STATIC_LIBS TRUE)
 
 if (WIN32)
     if(NOT DEFINED SQLite3_INCLUDE_DIR)
@@ -42,14 +41,20 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-find_package(PythonLibs REQUIRED)
+#find_package(PythonLibs REQUIRED)
+set(Python_USE_STATIC_LIBS TRUE)
+find_package(Python COMPONENTS Development)
+if(NOT Python_FOUND)
+    message(FATAL_ERROR Required Python components not found)
+endif()
+
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                           ${CMAKE_CURRENT_SOURCE_DIR}/include
                           ${CMAKE_CURRENT_BINARY_DIR}/include
-                          ${PYTHON_INCLUDE_DIRS}
+                          ${Python_INCLUDE_DIRS}
                           ${SQLite3_INCLUDE_DIRS}
 )
 
@@ -63,7 +68,7 @@ else()
 target_link_libraries(${PROJECT_NAME}
                       stdc++fs
                       Threads::Threads
-                      ${PYTHON_LIBRARIES}
+                      ${Python_LIBRARIES}
                       ${SQLite3_LIBRARIES}
 )
 endif()

@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.14)
 
 project(nabe VERSION 2020.12.31)
 
+add_compile_definitions(Py_LIMITED_API)
+
 set(NABE_BUILD_ARCH x64)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -41,13 +43,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-#find_package(PythonLibs REQUIRED)
-set(Python_USE_STATIC_LIBS TRUE)
-find_package(Python COMPONENTS Development)
-if(NOT Python_FOUND)
-    message(FATAL_ERROR Required Python components not found)
-endif()
-
+find_package(PythonLibs 3.2 REQUIRED)
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 
@@ -68,7 +64,6 @@ else()
 target_link_libraries(${PROJECT_NAME}
                       stdc++fs
                       Threads::Threads
-                      -ldl
                       ${Python_LIBRARIES}
                       ${SQLite3_LIBRARIES}
 )

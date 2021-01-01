@@ -65,10 +65,10 @@ target_link_libraries(${PROJECT_NAME}
                       ${SQLite3_LIBRARIES}
 )
 else()
-target_link_libraries(${PROJECT_NAME} INTERFACE -ldl)
 target_link_libraries(${PROJECT_NAME}
                       stdc++fs
                       Threads::Threads
+                      -ldl
                       ${Python_LIBRARIES}
                       ${SQLite3_LIBRARIES}
 )

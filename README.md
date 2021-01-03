@@ -23,8 +23,29 @@ If you're building on Windows with Visual Studio, note that CMake can also be in
 
 Run the following commands:
 ```bash
+# Ubuntu/APT example - Get Python + Python-dev packages
+python --version # Example for Python 3.8
+sudo apt-get update && sudo apt-get install python3.8 python3.8-dev
+
+# Get the code, and cd inside the cloned repo root
 git clone --recurse-submodules this-repository-url
-cd inside-this-repo && cd build
+cd this-repo-name
+
+# Make new dir path inside the repo root
+mkdir -p include/thirdparty/sqlite-amalgamation
+# ... and cd inside it
+cd include/thirdparty/sqlite-amalgamation
+# Get SQLite code and build the main amalgamated include
+git clone https://github.com/sqlite/sqlite .
+sh configure
+make sqlite3.c
+# cd back to the root repo directory
+cd ../../..
+
+# From the repo root, cd into the "build" dir
+cd build
+
+# And finally run CMake
 cmake ..
 cmake --build .
 ```

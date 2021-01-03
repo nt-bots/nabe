@@ -31,9 +31,9 @@ jobs:
       if: runner.os == 'Linux'
       shell: bash
       run: |
-        sudo add-apt-repository ppa:deadsnakes/ppa
+        #sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
-        sudo apt-get install python3.8
+        sudo apt-get install python3.8 python3.8-dev
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

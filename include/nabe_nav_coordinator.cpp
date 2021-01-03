@@ -11,7 +11,7 @@
 #include <list>
 
 NABE_NavCoordinator::NABE_NavCoordinator(NABE_PathFinder* owner, const std::string& map_name, const char* maps_path, const char* navs_path)
-	: m_owner(owner), m_maps_path(maps_path), m_navs_path(navs_path)
+	: m_owner(owner), m_maps_path(maps_path), m_navs_path(navs_path), m_loaded(false)
 {
 	m_map = new NABE_GameMap(m_owner->GetMapFolderPath(), map_name);
 	m_loaded = LoadMapNavData();

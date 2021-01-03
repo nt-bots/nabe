@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -26,6 +26,14 @@ jobs:
     - uses: actions/checkout@v2
       with:
         submodules: recursive
+
+    - name: Get specific Python version
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt-get update
+        sudo apt-get install python3.8
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

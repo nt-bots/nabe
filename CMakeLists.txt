@@ -43,8 +43,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-# Minimum Python version required: 3.2 or higher (but not 4.0+)
-find_package(PythonLibs 3.2 REQUIRED)
+find_package(PythonLibs 3.8 EXACT REQUIRED)
 
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)

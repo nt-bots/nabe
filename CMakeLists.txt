@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.14)
 
-project(nabe VERSION 2020.12.31)
+project(nabe VERSION 2020.01.03)
 
-add_compile_definitions(Py_LIMITED_API)
-
+# This is used for some path names only; you'll probably have to tweak
+# things manually if you're building for a non-x64 arch system.
 set(NABE_BUILD_ARCH x64)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -43,14 +43,16 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-find_package(PythonLibs 3.2<4.0 REQUIRED)
+# Minimum Python version required: 3.2 or higher (but not 4.0+)
+find_package(PythonLibs 3.2 REQUIRED)
+
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
                           ${CMAKE_CURRENT_SOURCE_DIR}/include
                           ${CMAKE_CURRENT_BINARY_DIR}/include
-                          ${Python_INCLUDE_DIRS}
+                          ${PYTHON_INCLUDE_DIRS}
                           ${SQLite3_INCLUDE_DIRS}
 )
 
@@ -64,7 +66,7 @@ else()
 target_link_libraries(${PROJECT_NAME}
                       stdc++fs
                       Threads::Threads
-                      ${Python_LIBRARIES}
+                      ${PYTHON_LIBRARIES}
                       ${SQLite3_LIBRARIES}
 )
 endif()
@@ -73,6 +75,8 @@ include(FindFilesystem.cmake)
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
 if (MSVC)
+    # Some libraries used query this define for std 17+ features support.
+    # Need to set this flag manually on some MSVC versions to support it.
     target_compile_options(${PROJECT_NAME} PUBLIC
                            "/Zc:__cplusplus"
     )

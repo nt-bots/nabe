@@ -3,6 +3,7 @@
 *"Navigate A → B Externally"* — An external pathfinder for accompanying the SRCDS server side NT Bots plugin. WIP.
 
 ## License
+
 See the file [LICENSE.md](LICENSE.md) in this repository for details.
 
 ## Installing
@@ -21,7 +22,8 @@ If you're building on Windows with Visual Studio, note that CMake can also be in
 
 ### Linux
 
-Run the following commands:
+Example build commands for Ubuntu:
+
 ```bash
 # Ubuntu/APT example - Get Python + Python-dev packages
 python --version # Example for Python 3.8
@@ -62,10 +64,12 @@ Example tools for building the statically linked SQLite3 library for MSVC from t
 * x64_x86 Cross Tools Command Prompt for VS 2019
 
 Building the library from command prompt:
+
 ```
 cl /c /EHsc sqlite3.c
 lib sqlite3.obj
 ```
 
 #### Generating the CMake project from Visual Studio
+
 See the [related MS docs](https://docs.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio).

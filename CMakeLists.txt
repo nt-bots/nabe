@@ -43,7 +43,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-find_package(PythonLibs 3.9 EXACT REQUIRED)
+find_package(PythonLibs $ENV{NABE_PYTHON_VERSION} REQUIRED)
 
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)

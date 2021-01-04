@@ -38,7 +38,15 @@ jobs:
     - name: Get specific Python version
       if: runner.os == 'Windows'
       shell: powershell
-      run: choco install python --version=3.9.0
+      continue-on-error: true
+      run: |
+          choco install python --version=3.9.0 --install-arguments="'/l*v ${{runner.workspace}}\python3_msi_install.log'"
+    
+    - name: Debug
+      if: runner.os == 'Windows'
+      shell: cmd
+      run: |
+          type "${{runner.workspace}}\python3_msi_install.log"
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

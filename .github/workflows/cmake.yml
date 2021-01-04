@@ -95,8 +95,8 @@ jobs:
         cp build/config.ini ${{runner.workspace}}/build
         cp -r build/nav ${{runner.workspace}}/build
         cp -r build/scripts ${{runner.workspace}}/build
-        mv build/scripts/valve-keyvalues-python/valve_keyvalues_python build/scripts
-        rm -r build/scripts/valve-keyvalues-python
+        mv ${{runner.workspace}}/build/scripts/valve-keyvalues-python/valve_keyvalues_python ${{runner.workspace}}/build/scripts
+        rm -r ${{runner.workspace}}/build/scripts/valve-keyvalues-python
     
     - name: Add other build components  (Windows)
       if: runner.os == 'Windows'

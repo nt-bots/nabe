@@ -14,7 +14,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ ubuntu-latest, windows-latest ]
 
     runs-on: ${{ matrix.os }}
 
@@ -34,6 +34,11 @@ jobs:
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt-get update
         sudo apt-get install python3.9 python3.9-dev
+
+    - name: Get specific Python version
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: choco install python --version=3.9.0
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

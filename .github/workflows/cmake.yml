@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
+        python-version: [ '3.9' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -27,26 +28,9 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Get specific Python version
-      if: runner.os == 'Linux'
-      shell: bash
-      run: |
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt-get update
-        sudo apt-get install python3.9 python3.9-dev
-
-    - name: Get specific Python version
-      if: runner.os == 'Windows'
-      shell: powershell
-      continue-on-error: true
-      run: |
-          choco install python --version=3.9.0 --install-arguments="'/l*v ${{runner.workspace}}\python3_msi_install.log'"
-    
-    - name: Debug
-      if: runner.os == 'Windows'
-      shell: cmd
-      run: |
-          type "${{runner.workspace}}\python3_msi_install.log"
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

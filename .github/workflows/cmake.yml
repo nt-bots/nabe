@@ -112,41 +112,42 @@ jobs:
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        mv README.md build
-        mv LICENSE.md build
-        mv OpenSourceLicenses.md build
+        mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/nav"
+        mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts/valve_keyvalues_python"
         
-        mv build/scripts/valve-keyvalues-python/valve_keyvalues_python build/scripts
-        rm -r build/scripts/valve-keyvalues-python
+        mv README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        
+        mv build/scripts/valve-keyvalues-python/valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts"
 
     - name: Add other build components  (Windows)
       if: runner.os == 'Windows'
       shell: cmd
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        mkdir build\scripts\valve_keyvalues_python
+        setlocal enableextensions
+        mkdir "${{env.NABE_BUILD_PACKAGE_NAME}}\nav"
+        mkdir "${{env.NABE_BUILD_PACKAGE_NAME}}\scripts\valve_keyvalues_python"
         
-        move README.md build
-        move LICENSE.md build
-        move OpenSourceLicenses.md build
+        move README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move Release\nabe.exe "${{env.NABE_BUILD_PACKAGE_NAME}}"
         
-        xcopy /E build\scripts\valve-keyvalues-python\valve_keyvalues_python build\scripts\valve_keyvalues_python
-        rmdir /S /Q build\scripts\valve-keyvalues-python
+        xcopy /E build\scripts\valve-keyvalues-python\valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}\scripts\valve_keyvalues_python"
 
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{env.GITHUB_WORKSPACE}}/build
+      working-directory: ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}
       shell: bash
-      run: zip -r ${{runner.workspace}}/build/${{env.NABE_BUILD_PACKAGE_NAME}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+      run: zip -r ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip .
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: powershell
-      run: |
-        Copy-Item "build\Release\nabe.exe" -Destination "build"
-        Remove-Item "build\Release"
-        Compress-Archive -Path "build" -DestinationPath "build\${{env.NABE_BUILD_PACKAGE_NAME}}.zip"
+      run: Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_NAME}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_NAME}}.zip"
 
     - name: Create Release
       id: create_release
@@ -168,7 +169,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{runner.workspace}}/build/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_path: ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_content_type: application/zip
 

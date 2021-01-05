@@ -13,7 +13,7 @@ if (WIN32)
     endif()
     
     if(NOT DEFINED SQLite3_LIBRARY)
-        set(SQLite3_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/${NABE_BUILD_ARCH}/sqlite3.lib)
+        set(SQLite3_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/$ENV{NABE_BUILD_ARCH}/sqlite3.lib)
     endif()
 endif()
 

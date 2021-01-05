@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
-#set(NABE_BUILD_DATE 2021.01.01) # If you need to manually set this for local build, etc.
-project(nabe VERSION $ENV{NABE_BUILD_DATE})
+#set(NABE_BUILD_VERSION 2021.01.01) # If you need to manually set this for local build, etc.
+project(nabe VERSION $ENV{NABE_BUILD_VERSION})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

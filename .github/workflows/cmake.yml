@@ -32,7 +32,7 @@ jobs:
       shell: bash
       run: |
         echo "NABE_BUILD_ARCH=x64" >> $GITHUB_ENV
-        echo "NABE_BUILD_VERSION=$(date +'%Y.%m.%d')+${{github.sha}}" >> $GITHUB_ENV
+        echo "NABE_BUILD_VERSION=$(date +'%Y.%m.%d')-${{github.sha}}" >> $GITHUB_ENV
         echo "NABE_BUILD_DATE_FILENAME_FRIENDLY=$(date +'%y-%m-%d')" >> $GITHUB_ENV
 
     - name: Set build env variables 2

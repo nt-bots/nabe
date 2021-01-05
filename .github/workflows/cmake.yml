@@ -103,9 +103,6 @@ jobs:
 
     - name: Add other build components  (Linux)
       if: runner.os == 'Linux'
-      env:
-        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}/build'
-        NABE_BUILD_PACKAGE_NAME: 'nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}'
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
@@ -123,22 +120,19 @@ jobs:
     - name: Add other build components  (Windows)
       if: runner.os == 'Windows'
       shell: cmd
-      env:
-        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}\build'
-        NABE_BUILD_PACKAGE_NAME: 'nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}'
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}\nav"
-        mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}\scripts"
+        mkdir "${{runner.workspace}}\build"
+        mkdir "${{runner.workspace}}\build\nav"
+        mkdir "${{runner.workspace}}\build\scripts"
         
-        copy README.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        copy LICENSE.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        copy OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        copy build/config.ini "${{env.NABE_BUILD_PACKAGE_DIR}}"
+        copy README.md "${{runner.workspace}}\build"
+        copy LICENSE.md "${{runner.workspace}}\build"
+        copy OpenSourceLicenses.md "${{runner.workspace}}\build"
+        copy build/config.ini "${{runner.workspace}}\build"
         
-        xcopy /E build\nav "${{env.NABE_BUILD_PACKAGE_DIR}}\nav"
-        xcopy /E build\scripts "${{env.NABE_BUILD_PACKAGE_DIR}}\scripts"
+        xcopy /E build\nav "${{runner.workspace}}\build\nav"
+        xcopy /E build\scripts "${{runner.workspace}}\build\scripts"
         
         xcopy /E "${{runner.workspace}}\build\scripts\valve-keyvalues-python\valve_keyvalues_python" "${{runner.workspace}}\build\scripts\valve_keyvalues_python"
         rmdir /S /Q "${{runner.workspace}}\build\scripts\valve-keyvalues-python"
@@ -147,15 +141,15 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip -r ${{env.NABE_BUILD_PACKAGE_DIR}}/{{env.NABE_BUILD_PACKAGE_NAME}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+      run: zip -r ${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
       shell: powershell
       run: |
-        Copy-Item "Release/nabe.exe" -Destination "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_DIR}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_DIR}}\{{env.NABE_BUILD_PACKAGE_NAME}}.zip"
+        Copy-Item "Release\nabe.exe" -Destination "${{runner.workspace}}\build"
+        Compress-Archive -Path "${{runner.workspace}}\build" -DestinationPath "${{runner.workspace}}\build\nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip"
 
     - name: Create Release
       id: create_release
@@ -177,6 +171,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{env.NABE_BUILD_PACKAGE_DIR}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
-        asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_path: ${{runner.workspace}}/build/${{runner.workspace}}\build\nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
+        asset_name: ${{runner.workspace}}\build\nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
         asset_content_type: application/zip

@@ -118,7 +118,9 @@ jobs:
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
+        ls
         mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/nav"
+        cd "./${{env.NABE_BUILD_PACKAGE_NAME}}" && ls && cd ..
         mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts/valve_keyvalues_python"
         
         mv README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
@@ -145,10 +147,11 @@ jobs:
 
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: bash
       run: |
         ls
+        cd "./${{env.NABE_BUILD_PACKAGE_NAME}}" && ls
         zip -r ${{env.NABE_BUILD_PACKAGE_NAME}}.zip ./*
 
     - name: Archive the build (Windows)

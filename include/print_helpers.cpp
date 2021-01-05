@@ -10,7 +10,7 @@
 // This grabs the CMake generated version from the builds header above.
 #define GET_VERSION_STRING() CMAKEVAR_TOSTR1(nabe_VERSION)
 // Get the repo commit hash of this release.
-#define GET_COMMIT_STRING() CMAKEVAR_TOSTR1(nabe_COMMIT)
+#define GET_COMMIT_STRING() CMAKEVAR_TOSTR1(NABE_COMMIT)
 
 #define CMAKEVAR_TOSTR1(X) CMAKEVAR_TOSTR2(X)
 #define CMAKEVAR_TOSTR2(X) #X

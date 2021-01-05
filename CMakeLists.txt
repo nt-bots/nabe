@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14)
 project(nabe VERSION $ENV{NABE_BUILD_VERSION})
 
 set(NABE_COMMIT $ENV{NABE_THIS_COMMIT_SHA})
-configure_file(NabeConfig.h.in NabeConfig.h @ONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/include/NabeConfig.h.in ${CMAKE_CURRENT_SOURCE_DIR}/include/NabeConfig.h @ONLY)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

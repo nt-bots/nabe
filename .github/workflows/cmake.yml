@@ -100,11 +100,11 @@ jobs:
       # access regardless of the host operating system
       env:
         NABE_PYTHON_VERSION: ${{matrix.python-version}}
-      working-directory: ${{GITHUB_WORKSPACE}}
+      working-directory: ${{runner.workspace}}/build
       shell: bash
       # Note the current convention is to use the -S and -B options here to specify source
       # and build directories, but this is only available with CMake 3.13 and higher.
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -126,7 +126,7 @@ jobs:
         
         mv build/scripts/valve-keyvalues-python/valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts"
 
-    - name: Add other build components  (Windows)
+    - name: Add other build components (Windows)
       if: runner.os == 'Windows'
       shell: cmd
       working-directory: ${{github.workspace}}

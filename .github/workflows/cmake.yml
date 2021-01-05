@@ -104,7 +104,8 @@ jobs:
     - name: Add other build components  (Linux)
       if: runner.os == 'Linux'
       env:
-        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}'
+        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}/build'
+        NABE_BUILD_PACKAGE_NAME: 'nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}'
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
@@ -123,7 +124,8 @@ jobs:
       if: runner.os == 'Windows'
       shell: cmd
       env:
-        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}\build\nabe_x64_${{runner.os}}_python${{matrix.python-version}}'
+        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}\build'
+        NABE_BUILD_PACKAGE_NAME: 'nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}'
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}"
@@ -145,7 +147,7 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip -r ${{env.NABE_BUILD_PACKAGE_DIR}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+      run: zip -r ${{env.NABE_BUILD_PACKAGE_DIR}}/{{env.NABE_BUILD_PACKAGE_NAME}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
@@ -153,7 +155,7 @@ jobs:
       shell: powershell
       run: |
         Copy-Item "Release/nabe.exe" -Destination "${{env.NABE_BUILD_PACKAGE_DIR}}"
-        Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_DIR}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_DIR}}.zip"
+        Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_DIR}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_DIR}}\{{env.NABE_BUILD_PACKAGE_NAME}}.zip"
 
     - name: Create Release
       id: create_release
@@ -175,6 +177,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{env.NABE_BUILD_PACKAGE_DIR}}.zip
-        asset_name: nabe_x64_${{runner.os}}_Python${{matrix.python-version}}_${{github.ref}}.zip
+        asset_path: ${{env.NABE_BUILD_PACKAGE_DIR}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_content_type: application/zip

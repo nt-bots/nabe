@@ -163,10 +163,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-        tag_name: ${{ github.ref }}
+        tag_name: ${{ github.ref }}-${{ env.NABE_BUILD_ARCH }}-${{ runner.os }}-${{ matrix.python-version }}
         release_name: Release (${{runner.os}}, Python ${{matrix.python-version}}) ${{ github.ref }}
         body: |
-          Automated prerelease (WIP) for ${{runner.os}}.
+          Automated prerelease for ${{runner.os}} (${{ env.NABE_BUILD_ARCH }}).
           Requirements: Python ${{matrix.python-version}}.
         draft: true
         prerelease: true

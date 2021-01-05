@@ -43,6 +43,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
+#set(NABE_PYTHON_VERSION 3.9) # If you need to manually set this for local build etc.
 find_package(PythonLibs $ENV{NABE_PYTHON_VERSION} REQUIRED)
 
 find_package(SQLite3 REQUIRED)

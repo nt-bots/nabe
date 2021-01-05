@@ -124,6 +124,7 @@ jobs:
         mv README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
         mv LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
         mv OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv build/nabe "${{env.NABE_BUILD_PACKAGE_NAME}}"
         
         mv build/scripts/valve-keyvalues-python/valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts"
 
@@ -139,7 +140,7 @@ jobs:
         move README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
         move LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
         move OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
-        move Release\nabe.exe "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move build\Release\nabe.exe "${{env.NABE_BUILD_PACKAGE_NAME}}"
         
         xcopy /E build\scripts\valve-keyvalues-python\valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}\scripts\valve_keyvalues_python"
 
@@ -165,7 +166,8 @@ jobs:
         tag_name: ${{ github.ref }}
         release_name: Release (${{runner.os}}, Python ${{matrix.python-version}}) ${{ github.ref }}
         body: |
-          Automated prerelease for ${{runner.os}}. Requirements: Python ${{matrix.python-version}}. WIP.
+          Automated prerelease (WIP) for ${{runner.os}}.
+          Requirements: Python ${{matrix.python-version}}.
         draft: true
         prerelease: true
 

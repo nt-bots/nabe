@@ -32,7 +32,7 @@ jobs:
       shell: bash
       run: |
         echo "NABE_BUILD_ARCH=x64" >> $GITHUB_ENV
-        echo "NABE_BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        echo "NABE_BUILD_DATE=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
         echo "NABE_BUILD_PACKAGE_NAME=nabe_${{env.NABE_BUILD_ARCH}}_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip" >> $GITHUB_ENV
 
     - name: Get specific Python version (Linux)

@@ -15,13 +15,13 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
-        python-version: [ '3.9' ]
+        python-version: [ '3.8', '3.9' ]
 
     runs-on: ${{ matrix.os }}
 
     env:
-      if: runner.os == 'Windows'
       POWERSHELL_TELEMETRY_OPTOUT: 1
+      CHOCOLATEY_PYTHON_PATCH_VER: 'undefined'
 
     steps:
     - uses: actions/checkout@v2
@@ -36,17 +36,19 @@ jobs:
         sudo apt-get update
         sudo apt-get install python${{matrix.python-version}} python${{matrix.python-version}}-dev
 
-    # Need to manually specify the patch version (3.9.1)... :-(
-    - name: Get specific Python version (Windows, Python 3.9.x)
+    # Need to manually specify the patch version, for now... :-( I guess this could be grepped from somewhere.
+    - name: Detect Chocolatey Python patch version (Windows, Python 3.9.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.9'
-      shell: powershell
-      run: choco install --version=${{matrix.python-version}}.1 --ignore-detected-reboot python
-
-    # Need to manually specify the patch version (3.8.7)... :-(
-    - name: Get specific Python version (Windows, Python 3.8.x)
+      env:
+        CHOCOLATEY_PYTHON_PATCH_VER: '.1'
+    - name: Detect Chocolatey Python patch version (Windows, Python 3.8.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.8'
+      env:
+        CHOCOLATEY_PYTHON_PATCH_VER: '.7'
+    - name: Get specific Python version (Linux)
+      if: runner.os == 'Windows'
       shell: powershell
-      run: choco install --version=${{matrix.python-version}}.7 --ignore-detected-reboot python
+      run: choco install --version=${{matrix.python-version}}.${{env.CHOCOLATEY_PYTHON_PATCH_VER}} --ignore-detected-reboot python
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

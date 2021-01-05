@@ -40,11 +40,11 @@ jobs:
     - name: Detect Chocolatey Python patch version (Windows, Python 3.9.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.9'
       shell: bash
-      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=.1" >> $GITHUB_ENV
+      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=1" >> $GITHUB_ENV
     - name: Detect Chocolatey Python patch version (Windows, Python 3.8.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.8'
       shell: bash
-      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=.7" >> $GITHUB_ENV
+      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=7" >> $GITHUB_ENV
     - name: Get specific Python version (Windows)
       if: runner.os == 'Windows'
       shell: powershell

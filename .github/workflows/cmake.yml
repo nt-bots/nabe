@@ -28,6 +28,13 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set build env variables
+      shell: bash
+      run: |
+        echo "NABE_BUILD_ARCH=x64" >> $GITHUB_ENV
+        echo "NABE_BUILD_DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+        echo "NABE_BUILD_PACKAGE_NAME=nabe_${{env.NABE_BUILD_ARCH}}_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip" >> $GITHUB_ENV
+
     - name: Get specific Python version (Linux)
       if: runner.os == 'Linux'
       shell: bash
@@ -56,32 +63,31 @@ jobs:
 
     - name: Build SQLite3 amalgamation (Linux)
       if: runner.os == 'Linux'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: bash
       run: |
-        cd "${{env.GITHUB_WORKSPACE}}"
         mkdir -p include/thirdparty/sqlite-amalgamation
         cd include/thirdparty/sqlite-amalgamation
         git clone https://github.com/sqlite/sqlite .
         sh configure
         make sqlite3.c
-        cd "${{env.GITHUB_WORKSPACE}}"
 
     - name: Build SQLite3 amalgamation (Windows)
       if: runner.os == 'Windows'
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: |
-        cd "${{env.GITHUB_WORKSPACE}}"
-        mkdir lib\thirdparty\x64
+        mkdir lib\thirdparty\${{env.NABE_BUILD_ARCH}}
         mkdir include\thirdparty\sqlite-amalgamation
         cd include\thirdparty\sqlite-amalgamation
         git clone https://github.com/sqlite/sqlite .
         nmake /f makefile.msc sqlite3.c
         cl /c /EHsc sqlite3.c
         lib sqlite3.obj
-        move sqlite3.lib ..\..\..\lib\thirdparty\x64\sqlite3.lib
-        cd "${{env.GITHUB_WORKSPACE}}"
+        move sqlite3.lib ..\..\..\lib\thirdparty\${{env.NABE_BUILD_ARCH}}\sqlite3.lib
 
     - name: Create Build Environment
+      working-directory: ${{env.GITHUB_WORKSPACE}}
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
@@ -142,7 +148,7 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: ${{runner.workspace}}/build
       shell: bash
-      run: zip -r ${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
+      run: zip -r ${{runner.workspace}}/build/${{env.NABE_BUILD_PACKAGE_NAME}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
@@ -150,7 +156,7 @@ jobs:
       shell: powershell
       run: |
         Copy-Item "Release\nabe.exe" -Destination "${{runner.workspace}}\build"
-        Compress-Archive -Path "${{runner.workspace}}\build" -DestinationPath "${{runner.workspace}}\build\nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip"
+        Compress-Archive -Path "${{runner.workspace}}\build" -DestinationPath "${{runner.workspace}}\build\${{env.NABE_BUILD_PACKAGE_NAME}}.zip"
 
     - name: Create Release
       id: create_release
@@ -172,7 +178,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
-        asset_name: nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
+        asset_path: ${{runner.workspace}}/build/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_content_type: application/zip
 

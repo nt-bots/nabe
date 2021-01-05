@@ -69,7 +69,7 @@ jobs:
 
     - name: Build SQLite3 amalgamation (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       shell: bash
       run: |
         mkdir -p include/thirdparty/sqlite-amalgamation
@@ -80,7 +80,7 @@ jobs:
 
     - name: Build SQLite3 amalgamation (Windows)
       if: runner.os == 'Windows'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       shell: cmd
       run: |
         mkdir lib\thirdparty\${{env.NABE_BUILD_ARCH}}
@@ -93,7 +93,7 @@ jobs:
         move sqlite3.lib ..\..\..\lib\thirdparty\${{env.NABE_BUILD_ARCH}}\sqlite3.lib
 
     - name: Create Build Environment
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
@@ -116,7 +116,7 @@ jobs:
     - name: Add other build components  (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       run: |
         mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/nav"
         mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts/valve_keyvalues_python"
@@ -130,7 +130,7 @@ jobs:
     - name: Add other build components  (Windows)
       if: runner.os == 'Windows'
       shell: cmd
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       run: |
         setlocal enableextensions
         mkdir "${{env.NABE_BUILD_PACKAGE_NAME}}\nav"
@@ -145,7 +145,7 @@ jobs:
 
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       shell: bash
       run: |
         cd "./${{env.NABE_BUILD_PACKAGE_NAME}}"
@@ -153,7 +153,7 @@ jobs:
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{GITHUB_WORKSPACE}}
       shell: powershell
       run: Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_NAME}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_NAME}}.zip"
 
@@ -177,7 +177,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_path: ${{GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_content_type: application/zip
 

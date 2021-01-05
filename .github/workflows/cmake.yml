@@ -28,7 +28,7 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Get specific Python version
+    - name: Get specific Python version (Linux)
       if: runner.os == 'Linux'
       shell: bash
       run: |
@@ -36,12 +36,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install python${{matrix.python-version}} python${{matrix.python-version}}-dev
 
-    - name: Get specific Python version
-      if: runner.os == 'Windows'
+    # Need to manually specify the patch version (3.9.1)... :-(
+    - name: Get specific Python version (Windows, Python 3.9.x)
+      if: runner.os == 'Windows' && matrix.python-version == '3.9'
       shell: powershell
-      continue-on-error: false
-      run: |
-          choco install --version=${{matrix.python-version}}.x --ignore-detected-reboot python
+      run: choco install --version=${{matrix.python-version}}.1 --ignore-detected-reboot python
+
+    # Need to manually specify the patch version (3.8.7)... :-(
+    - name: Get specific Python version (Windows, Python 3.8.x)
+      if: runner.os == 'Windows' && matrix.python-version == '3.8'
+      shell: powershell
+      run: choco install --version=${{matrix.python-version}}.7 --ignore-detected-reboot python
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

@@ -147,7 +147,9 @@ jobs:
       if: runner.os == 'Linux'
       working-directory: ${{env.GITHUB_WORKSPACE}}/${{env.NABE_BUILD_PACKAGE_NAME}}
       shell: bash
-      run: zip -r ${{env.NABE_BUILD_PACKAGE_NAME}}.zip .
+      run: |
+        ls
+        zip -r ${{env.NABE_BUILD_PACKAGE_NAME}}.zip ./*
 
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'

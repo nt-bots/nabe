@@ -125,6 +125,7 @@ jobs:
         mkdir "${{runner.workspace}}\build"
         mkdir "${{runner.workspace}}\build\nav"
         mkdir "${{runner.workspace}}\build\scripts"
+        mkdir "${{runner.workspace}}\build\scripts\valve_keyvalues_python"
         
         copy README.md "${{runner.workspace}}\build"
         copy LICENSE.md "${{runner.workspace}}\build"
@@ -174,3 +175,4 @@ jobs:
         asset_path: ${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
         asset_name: nabe_x64_${{runner.os}}_python${{matrix.python-version}}_${{github.sha}}.zip
         asset_content_type: application/zip
+

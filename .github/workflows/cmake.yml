@@ -20,8 +20,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     env:
+      if: runner.os == 'Windows'
       POWERSHELL_TELEMETRY_OPTOUT: 1
-      CHOCOLATEY_PYTHON_PATCH_VER: 'undefined'
 
     steps:
     - uses: actions/checkout@v2
@@ -39,13 +39,13 @@ jobs:
     # Need to manually specify the patch version, for now... :-( I guess this could be grepped from somewhere.
     - name: Detect Chocolatey Python patch version (Windows, Python 3.9.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.9'
-      env:
-        CHOCOLATEY_PYTHON_PATCH_VER: '.1'
+      shell: bash
+      run: echo ".1" >> $CHOCOLATEY_PYTHON_PATCH_VER
     - name: Detect Chocolatey Python patch version (Windows, Python 3.8.x)
       if: runner.os == 'Windows' && matrix.python-version == '3.8'
-      env:
-        CHOCOLATEY_PYTHON_PATCH_VER: '.7'
-    - name: Get specific Python version (Linux)
+      shell: bash
+      run: echo ".7" >> $CHOCOLATEY_PYTHON_PATCH_VER
+    - name: Get specific Python version (Windows)
       if: runner.os == 'Windows'
       shell: powershell
       run: choco install --version=${{matrix.python-version}}.${{env.CHOCOLATEY_PYTHON_PATCH_VER}} --ignore-detected-reboot python
@@ -93,9 +93,7 @@ jobs:
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source
       # and build directories, but this is only available with CMake 3.13 and higher.
-      run: |
-        echo "Python ver: ${{env.NABE_PYTHON_VERSION}}"
-        cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

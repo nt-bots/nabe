@@ -1,2 +1,3 @@
 #define nabe_VERSION @nabe_VERSION@
-#define nabe_COMMIT @nabe_COMMIT@
+
+#cmakedefine NABE_COMMIT "@NABE_COMMIT@"

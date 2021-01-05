@@ -102,21 +102,25 @@ jobs:
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
-    
+
     - name: Add other build components  (Linux)
       if: runner.os == 'Linux'
+      env:
+        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}'
       shell: bash
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         cp README.md ${{runner.workspace}}/build
         cp LICENSE.md ${{runner.workspace}}/build
         cp OpenSourceLicenses.md ${{runner.workspace}}/build
+        
         cp build/config.ini ${{runner.workspace}}/build
         cp -r build/nav ${{runner.workspace}}/build
         cp -r build/scripts ${{runner.workspace}}/build
+        
         mv ${{runner.workspace}}/build/scripts/valve-keyvalues-python/valve_keyvalues_python ${{runner.workspace}}/build/scripts
         rm -r ${{runner.workspace}}/build/scripts/valve-keyvalues-python
-    
+
     - name: Add other build components  (Windows)
       if: runner.os == 'Windows'
       shell: cmd
@@ -127,21 +131,24 @@ jobs:
         mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}"
         mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}\nav"
         mkdir "${{env.NABE_BUILD_PACKAGE_DIR}}\scripts"
+        
         copy README.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
         copy LICENSE.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
         copy OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_DIR}}"
         copy build/config.ini "${{env.NABE_BUILD_PACKAGE_DIR}}"
+        
         xcopy /E build\nav "${{env.NABE_BUILD_PACKAGE_DIR}}\nav"
         xcopy /E build\scripts "${{env.NABE_BUILD_PACKAGE_DIR}}\scripts"
-    
+        
+        xcopy /E "${{runner.workspace}}\build\scripts\valve-keyvalues-python\valve_keyvalues_python" "${{runner.workspace}}\build\scripts\valve_keyvalues_python"
+        rmdir /S /Q "${{runner.workspace}}\build\scripts\valve-keyvalues-python"
+
     - name: Archive the build (Linux)
       if: runner.os == 'Linux'
-      env:
-        NABE_BUILD_PACKAGE_DIR: '${{runner.workspace}}/build/nabe_x64_${{runner.os}}_python${{matrix.python-version}}'
       working-directory: ${{runner.workspace}}/build
       shell: bash
       run: zip -r ${{env.NABE_BUILD_PACKAGE_DIR}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
-    
+
     - name: Archive the build (Windows)
       if: runner.os == 'Windows'
       working-directory: ${{runner.workspace}}/build
@@ -149,7 +156,7 @@ jobs:
       run: |
         Copy-Item "Release/nabe.exe" -Destination "${{env.NABE_BUILD_PACKAGE_DIR}}"
         Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_DIR}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_DIR}}.zip"
-    
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -162,7 +169,7 @@ jobs:
           Automated prerelease. WIP.
         draft: true
         prerelease: true
-    
+
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
@@ -171,5 +178,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
         asset_path: ${{env.NABE_BUILD_PACKAGE_DIR}}.zip
-        asset_name: nabe_x64_${{runner.os}}_Python${{matrix.python-version}}_${{github.ref}}.zip
+        asset_name: nabe_x64_${{runner.os}}_Python${{matrix.python-version}}_${{GITHUB_REF}}.zip
         asset_content_type: application/zip

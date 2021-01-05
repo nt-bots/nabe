@@ -30,7 +30,7 @@ jobs:
 
     - uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{matrix.python-version}}-dev
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'
@@ -69,11 +69,13 @@ jobs:
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
+      env:
+        NABE_PYTHON_VERSION: ${{matrix.python-version}}
       shell: bash
       working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source
       # and build directories, but this is only available with CMake 3.13 and higher.
-      run: NABE_PYTHON_VERSION=${{matrix.python-version}} cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       working-directory: ${{runner.workspace}}/build

@@ -8,13 +8,17 @@
 #include "NabeConfig.h" // Generated to "binarypath/include" by CMake.
 
 // This grabs the CMake generated version from the builds header above.
-#define GET_VERSION_STRING() VERSION_TOSTR1(nabe_VERSION)
-#define VERSION_TOSTR1(X) VERSION_TOSTR2(X)
-#define VERSION_TOSTR2(X) #X
+#define GET_VERSION_STRING() CMAKEVAR_TOSTR1(nabe_VERSION)
+// Get the repo commit hash of this release.
+#define GET_COMMIT_STRING() CMAKEVAR_TOSTR1(nabe_COMMIT)
+
+#define CMAKEVAR_TOSTR1(X) CMAKEVAR_TOSTR2(X)
+#define CMAKEVAR_TOSTR2(X) #X
 
 void show_ascii_logo()
 {
     constexpr const char* version = GET_VERSION_STRING();
+    constexpr const char* commit_hash = GET_COMMIT_STRING();
 
 	// Whitespace formatting
 	constexpr size_t v_pos = 21; // position index where to place the 'V', after the \t, on logo line 3
@@ -33,6 +37,7 @@ void show_ascii_logo()
 		// Omit the logo 'V' if there's no room to display it
         (strlen(spaces) + strlen(version) < v_pos ? "V" : "") << std::endl;
 	std::cout << "  -- Navigate A-->B Externally --" << std::endl << std::endl;
+	std::cout << "(Commit: " << commit_hash << ")" << std::endl;
 }
 
 void print(LogLevel loglvl, const char* to_be_formatted, ...)

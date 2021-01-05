@@ -15,6 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
+        python-version: [ '3.8', '3.9' ]
 
     runs-on: ${{ matrix.os }}
 
@@ -27,96 +28,135 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set Build Env Variables 1
+      shell: bash
+      run: |
+        echo "NABE_BUILD_ARCH=x64" >> $GITHUB_ENV
+        echo "NABE_BUILD_VERSION=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+        echo "NABE_BUILD_DATE_FILENAME_FRIENDLY=$(date +'%y-%m-%d')" >> $GITHUB_ENV
+        echo "NABE_GIT_COMMIT_HASH={{github.sha}}" >> $GITHUB_ENV
+
+    # Separated from above so that we can evaluate the previously set variables here
+    - name: Set Build Env Variables 2
+      shell: bash
+      run: |
+        echo "NABE_BUILD_PACKAGE_NAME=nabe_${{env.NABE_BUILD_ARCH}}_${{runner.os}}_Py${{matrix.python-version}}_${{env.NABE_BUILD_DATE_FILENAME_FRIENDLY}}_${{github.sha}}" >> $GITHUB_ENV
+
+    - name: Get Specific Python Version (Linux)
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt-get update
+        sudo apt-get install python${{matrix.python-version}} python${{matrix.python-version}}-dev
+
+    # Need to manually specify the patch version, for now... :-( I guess this could be grepped from somewhere.
+    - name: Detect Chocolatey Python Patch Version (Windows, Python 3.9.x)
+      if: runner.os == 'Windows' && matrix.python-version == '3.9'
+      shell: bash
+      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=1" >> $GITHUB_ENV
+    - name: Detect Chocolatey Python patch version (Windows, Python 3.8.x)
+      if: runner.os == 'Windows' && matrix.python-version == '3.8'
+      shell: bash
+      run: echo "CHOCOLATEY_PYTHON_PATCH_VER=7" >> $GITHUB_ENV
+    - name: Get specific Python version (Windows)
+      if: runner.os == 'Windows'
+      shell: powershell
+      run: choco install --version=${{matrix.python-version}}.${{env.CHOCOLATEY_PYTHON_PATCH_VER}} --ignore-detected-reboot python
+
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'
       uses: ilammy/msvc-dev-cmd@v1.5.0
 
-    - name: Build SQLite3 amalgamation (Linux)
+    - name: Build SQLite3 Amalgamation (Linux)
       if: runner.os == 'Linux'
+      working-directory: ${{github.workspace}}
       shell: bash
       run: |
-        cd "${{env.GITHUB_WORKSPACE}}"
         mkdir -p include/thirdparty/sqlite-amalgamation
         cd include/thirdparty/sqlite-amalgamation
         git clone https://github.com/sqlite/sqlite .
         sh configure
         make sqlite3.c
-        cd "${{env.GITHUB_WORKSPACE}}"
 
-    - name: Build SQLite3 amalgamation (Windows)
+    - name: Build SQLite3 Amalgamation (Windows)
       if: runner.os == 'Windows'
+      working-directory: ${{github.workspace}}
       shell: cmd
       run: |
-        cd "${{env.GITHUB_WORKSPACE}}"
-        mkdir lib\thirdparty\x64
+        mkdir lib\thirdparty\${{env.NABE_BUILD_ARCH}}
         mkdir include\thirdparty\sqlite-amalgamation
         cd include\thirdparty\sqlite-amalgamation
         git clone https://github.com/sqlite/sqlite .
         nmake /f makefile.msc sqlite3.c
         cl /c /EHsc sqlite3.c
         lib sqlite3.obj
-        move sqlite3.lib ..\..\..\lib\thirdparty\x64\sqlite3.lib
-        cd "${{env.GITHUB_WORKSPACE}}"
+        move sqlite3.lib ..\..\..\lib\thirdparty\${{env.NABE_BUILD_ARCH}}\sqlite3.lib
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+    - name: Ensure the Build Environment Exists
+      run: cmake -E make_directory ${{github.workspace}}/build
 
     - name: Configure CMake
       # Use a bash shell so we can use the same syntax for environment variable
       # access regardless of the host operating system
+      env:
+        NABE_PYTHON_VERSION: ${{matrix.python-version}}
+      working-directory: ${{github.workspace}}/build
       shell: bash
-      working-directory: ${{runner.workspace}}/build
       # Note the current convention is to use the -S and -B options here to specify source
       # and build directories, but this is only available with CMake 3.13 and higher.
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
-    - name: Build
-      working-directory: ${{runner.workspace}}/build
+    - name: Build the Main Project
+      working-directory: ${{github.workspace}}/build
       shell: bash
       # Execute the build.  You can specify a specific target with "--target <NAME>"
       run: cmake --build . --config $BUILD_TYPE
-    
-    - name: Add other build components  (Linux)
+
+    - name: Add Other Release Components to Build (Linux)
       if: runner.os == 'Linux'
       shell: bash
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{github.workspace}}
       run: |
-        cp README.md ${{runner.workspace}}/build
-        cp LICENSE.md ${{runner.workspace}}/build
-        cp OpenSourceLicenses.md ${{runner.workspace}}/build
-        cp build/config.ini ${{runner.workspace}}/build
-        cp -r build/nav ${{runner.workspace}}/build
-        cp -r build/scripts ${{runner.workspace}}/build
+        mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/nav"
+        mkdir -p "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts/valve_keyvalues_python"
         
-    - name: Add other build components  (Windows)
+        mv README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        mv build/nabe "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        
+        mv build/scripts/valve-keyvalues-python/valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}/scripts"
+
+    - name: Add Other Release Components to Build (Windows)
       if: runner.os == 'Windows'
       shell: cmd
-      working-directory: ${{env.GITHUB_WORKSPACE}}
+      working-directory: ${{github.workspace}}
       run: |
-        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\nav"
-        mkdir "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\scripts"
-        copy README.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        copy LICENSE.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        copy OpenSourceLicenses.md "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        copy build/config.ini "${{runner.workspace}}\build\nabe_x64_${{runner.os}}"
-        xcopy /E build\nav "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\nav"
-        xcopy /E build\scripts "${{runner.workspace}}\build\nabe_x64_${{runner.os}}\scripts"
-    
-    - name: Archive the build (Linux)
+        setlocal enableextensions
+        mkdir "${{env.NABE_BUILD_PACKAGE_NAME}}\nav"
+        mkdir "${{env.NABE_BUILD_PACKAGE_NAME}}\scripts\valve_keyvalues_python"
+        
+        move README.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move LICENSE.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move OpenSourceLicenses.md "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        move build\Release\nabe.exe "${{env.NABE_BUILD_PACKAGE_NAME}}"
+        
+        xcopy /E build\scripts\valve-keyvalues-python\valve_keyvalues_python "${{env.NABE_BUILD_PACKAGE_NAME}}\scripts\valve_keyvalues_python"
+
+    - name: Archive the Build (Linux)
       if: runner.os == 'Linux'
-      working-directory: ${{runner.workspace}}/build
+      working-directory: ${{github.workspace}}/${{env.NABE_BUILD_PACKAGE_NAME}}
       shell: bash
-      run: zip -r nabe_x64_${{runner.os}}.zip nabe config.ini nav scripts README.md LICENSE.md OpenSourceLicenses.md
-    
-    - name: Archive the build (Windows)
-      if: runner.os == 'Windows'
-      working-directory: ${{runner.workspace}}/build
-      shell: powershell
       run: |
-        Copy-Item "Release/nabe.exe" -Destination ".\nabe_x64_${{runner.os}}"
-        Compress-Archive -Path ".\nabe_x64_${{runner.os}}" -DestinationPath ".\nabe_x64_${{runner.os}}.zip"
-    
+        zip -r ../${{env.NABE_BUILD_PACKAGE_NAME}}.zip ./*
+
+    - name: Archive the Build (Windows)
+      if: runner.os == 'Windows'
+      working-directory: ${{github.workspace}}
+      shell: powershell
+      run: Compress-Archive -Path "${{env.NABE_BUILD_PACKAGE_NAME}}" -DestinationPath "${{env.NABE_BUILD_PACKAGE_NAME}}.zip"
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -124,12 +164,13 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
         tag_name: ${{ github.ref }}
-        release_name: Release (${{runner.os}}) ${{ github.ref }}
+        release_name: Release (${{runner.os}}, Python ${{matrix.python-version}}) ${{ github.ref }}
         body: |
-          Automated release. WIP.
+          Automated prerelease (WIP) for ${{runner.os}}.
+          Requirements: Python ${{matrix.python-version}}.
         draft: true
         prerelease: true
-    
+
     - name: Upload Release Asset
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
@@ -137,7 +178,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-        asset_path: ${{runner.workspace}}/build/nabe_x64_${{ runner.os }}.zip
-        asset_name: nabe_x64_${{ runner.os }}.zip
+        asset_path: ${{github.workspace}}/${{env.NABE_BUILD_PACKAGE_NAME}}.zip
+        asset_name: ${{env.NABE_BUILD_PACKAGE_NAME}}.zip
         asset_content_type: application/zip
 

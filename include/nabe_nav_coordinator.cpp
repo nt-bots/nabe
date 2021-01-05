@@ -11,7 +11,7 @@
 #include <list>
 
 NABE_NavCoordinator::NABE_NavCoordinator(NABE_PathFinder* owner, const std::string& map_name, const char* maps_path, const char* navs_path)
-	: m_owner(owner), m_maps_path(maps_path), m_navs_path(navs_path)
+	: m_owner(owner), m_maps_path(maps_path), m_navs_path(navs_path), m_loaded(false)
 {
 	m_map = new NABE_GameMap(m_owner->GetMapFolderPath(), map_name);
 	m_loaded = LoadMapNavData();
@@ -25,7 +25,7 @@ NABE_NavCoordinator::~NABE_NavCoordinator()
 size_t NABE_NavCoordinator::GetBspSize(const std::string& map_name)
 {
 	if (map_name.empty()) {
-		print(Warning, "%s Attempted to get bsp size of empty.", __FUNCTION__);
+		print(Warning, "%s: Attempted to get bsp size of empty.", __FUNCTION__);
 		return 0;
 	}
 
@@ -53,22 +53,22 @@ bool strcontains(const char* s1, const char* s2)
 bool NABE_NavCoordinator::LoadMapNavData()
 {
 	if (m_map->map_name.empty()) {
-		print(Error, "%s Attempted to load map data of empty.", __FUNCTION__);
+		print(Error, "%s: Attempted to load map data of empty.", __FUNCTION__);
 		return false;
 	}
 	else if (m_map->map_size == 0) {
-		print(Error, "%s Attempted to load map data without valid bsp size.", __FUNCTION__);
+		print(Error, "%s: Attempted to load map data without valid bsp size.", __FUNCTION__);
 		return false;
 	}
 	else if (m_loaded) {
-		print(Error, "%s Attempted to load map data into an already occupied class instance.", __FUNCTION__);
+		print(Error, "%s: Attempted to load map data into an already occupied class instance.", __FUNCTION__);
 		return false;
 	}
 
 	NABE_KeyValues kv;
 	NavParser parser;
 	if (!parser.Parse(m_map->map_name.c_str(), m_maps_path, m_navs_path, kv)) {
-		print(Error, "%s Map nav data parsing failed.", __FUNCTION__);
+		print(Error, "%s: Map nav data parsing failed.", __FUNCTION__);
 		return false;
 	}
 
@@ -170,12 +170,12 @@ bool NABE_NavCoordinator::LoadMapNavData()
 		if (is_nav_teams) { ++num_bools_hit; }
 		if (is_sub_node) { ++num_bools_hit; }
 		if (num_bools_hit == 0) {
-			print(Error, "%s Unknown kind of node: (%s), (%s), (%s)",
+			print(Error, "%s: Unknown kind of node: (%s), (%s), (%s)",
 				__FUNCTION__, p.section, p.key, p.value);
 			return false;
 		}
 		else if (num_bools_hit != 1) {
-			print(Error, "%s Hit more than one compare bools, this should never happen! (%s), (%s), (%s)",
+			print(Error, "%s: Hit more than one compare bools, this should never happen! (%s), (%s), (%s)",
 				__FUNCTION__, p.section, p.key, p.value);
 			return false;
 		}
@@ -230,14 +230,14 @@ bool NABE_NavCoordinator::LoadMapNavData()
 				// This is a string representation of the header hex check (0xFEEDFACE)
 				constexpr auto header_magic_number_check = "FEEDFACE";
 				if (!streq(p.value, header_magic_number_check)) {
-					print(Error, "%s Failed the magic number check.", __FUNCTION__);
+					print(Error, "%s: Failed the magic number check.", __FUNCTION__);
 					return false;
 				}
 			}
 			else if (streq(p.key, "version")) {
 				const auto nav_version = std::stoi(std::string{ p.value });
 				if (nav_version <= 0) {
-					print(Error, "Invalid nav_version (%d)", nav_version);
+					print(Error, "%s: Invalid nav_version (%d)", __FUNCTION__, nav_version);
 					return false;
 				}
 				const auto supported_nav_versions = { 9, };
@@ -249,7 +249,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 					}
 				}
 				if (!is_supported) {
-					print(Error, "%s Nav version %d is not supported.",
+					print(Error, "%s: Nav version %d is not supported.",
 						__FUNCTION__, nav_version);
 					return false;
 				}
@@ -257,11 +257,11 @@ bool NABE_NavCoordinator::LoadMapNavData()
 			else if (streq(p.key, "bsp_size")) {
 				const auto nav_reported_bsp_size = std::stoi(std::string{ p.value });
 				if (nav_reported_bsp_size <= 0) {
-					print(Error, "%s Invalid nav_reported_bsp_size (%d)", __FUNCTION__, nav_reported_bsp_size);
+					print(Error, "%s: Invalid nav_reported_bsp_size (%d)", __FUNCTION__, nav_reported_bsp_size);
 					return false;
 				}
 				else if (nav_reported_bsp_size != m_map->map_size) {
-					print(Error, "%s BSP size mismatch between parsed nav size (%d bytes) and actual size (%d bytes).",
+					print(Error, "%:s BSP size mismatch between parsed nav size (%d bytes) and actual size (%d bytes).",
 						__FUNCTION__, nav_reported_bsp_size, m_map->map_size);
 					std::cout << "BSP lookup path: " << fs::absolute(m_owner->GetMapFolderPath())
 						<< " (map: " << m_map->map_name << ")" << std::endl;
@@ -269,7 +269,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 				}
 			}
 			else {
-				print(Error, "%s Unrecognized %s section entry: %s", __FUNCTION__, p.section, p.key);
+				print(Error, "%s: Unrecognized %s section entry: %s", __FUNCTION__, p.section, p.key);
 				return false;
 			}
 			continue;
@@ -301,7 +301,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						entry->m_neZ = std::stof(std::string{ p.value });
 					}
 					else {
-						print(Error, "Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value);
+						print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 						return false;
 					}
 				}
@@ -313,7 +313,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						entry->m_swZ = std::stof(std::string{ p.value });
 					}
 					else {
-						print(Error, "Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value);
+						print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 						return false;
 					}
 				}
@@ -333,7 +333,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						if (dir == this_dir) {
 							int id = std::stoi(std::string{ p.value });
 							if (id <= 0) {
-								print(Error, "%s Invalid id: %d", __FUNCTION__, id);
+								print(Error, "%s: Invalid id: %d", __FUNCTION__, id);
 								return false;
 							}
 							bool found_area = false;
@@ -376,7 +376,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						if (streq(p.key, "id")) {
 							const int spot_id = std::stoi(std::string{ p.value });
 							if (spot_id < 0) {
-								print(Error, "%s Invalid spot id: %d", __FUNCTION__, spot_id);
+								print(Error, "%s: Invalid spot id: %d", __FUNCTION__, spot_id);
 								return false;
 							}
 							hiding_spot->m_id = spot_id;
@@ -387,7 +387,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						else if (streq(p.key, "flags")) {
 							const int flags = std::stoi(std::string{ p.value });
 							if (flags < 0) {
-								print(Error, "%s Invalid spot flags: %d", __FUNCTION__, flags);
+								print(Error, "%s: Invalid spot flags: %d", __FUNCTION__, flags);
 								return false;
 							}
 							hiding_spot->m_flags = flags;
@@ -398,7 +398,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 							hiding_spot = nullptr;
 						}
 						else {
-							print(Error, "%s Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value, __FUNCTION__);
+							print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 							delete hiding_spot;
 							return false;
 						}
@@ -413,7 +413,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 
 							if (streq(p.key, "from_area_id")) {
 								if (value <= 0) {
-									print(Error, "%s Invalid from id: %d", __FUNCTION__, value);
+									print(Error, "%s: Invalid from id: %d", __FUNCTION__, value);
 									return false;
 								}
 								else if (!SetSpotEncounter_FromArea(encounter_spot, value)) {
@@ -431,7 +431,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 							}
 							else if (streq(p.key, "to_area_id")) {
 								if (value <= 0) {
-									print(Error, "%s Invalid to id: %d", __FUNCTION__, value);
+									print(Error, "%s: Invalid to id: %d", __FUNCTION__, value);
 									return false;
 								}
 								else if (!SetSpotEncounter_ToArea(encounter_spot, value)) {
@@ -454,7 +454,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 								encounter_spot->toDir = static_cast<NavDirType>(value);
 							}
 							else {
-								print(Error, "%s Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value, __FUNCTION__);
+								print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 								delete encounter_spot;
 								delete hiding_spot;
 								delete entry;
@@ -463,7 +463,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						}
 						else {
 							if (!streq(p.key, "spots_along_this_path")) {
-								print(Error, "%s Unknown SKV tuple: %s - %s", p.section, p.key, __FUNCTION__);
+								print(Error, "%s: Unknown SKV tuple: %s - %s", __FUNCTION__, p.section, p.key);
 								delete encounter_spot;
 								delete hiding_spot;
 								delete entry;
@@ -494,7 +494,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						hiding_spot->m_pos = origin;
 					}
 					else {
-						print(Error, "%s Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value, __FUNCTION__);
+						print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 						delete hiding_spot;
 						delete entry;
 						return false;
@@ -503,7 +503,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 				else if (strcontains(p.section, "area_") && strcontains(p.key, "_area_")) {
 					const size_t number_start_index = strlen("area_");
 					if (!isdigit(p.section[number_start_index])) {
-						print(Error, "Area doesn't start with a positive integer: \"%s\"", p.key);
+						print(Error, "%s: Area doesn't start with a positive integer: \"%s\"", __FUNCTION__, p.key);
 						return false;
 					}
 
@@ -528,7 +528,7 @@ bool NABE_NavCoordinator::LoadMapNavData()
 						entry->m_approach[area_index].hereToNextHow = static_cast<NavTraverseType>(value);
 					}
 					else {
-						print(Error, "%s Unknown SKV tuple: %s - %s - %s", p.section, p.key, p.value, __FUNCTION__);
+						print(Error, "%s: Unknown SKV tuple: %s - %s - %s", __FUNCTION__, p.section, p.key, p.value);
 						delete entry;
 						return false;
 					}

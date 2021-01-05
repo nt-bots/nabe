@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(nabe VERSION 2020.01.03)
+#set(NABE_BUILD_VERSION 2021.01.01) # If you need to manually set this for local build, etc.
+project(nabe VERSION $ENV{NABE_BUILD_VERSION})
 
-# This is used for some path names only; you'll probably have to tweak
-# things manually if you're building for a non-x64 arch system.
-set(NABE_BUILD_ARCH x64)
+set(nabe_COMMIT $ENV{NABE_GIT_COMMIT_HASH})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,7 +15,7 @@ if (WIN32)
     endif()
     
     if(NOT DEFINED SQLite3_LIBRARY)
-        set(SQLite3_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/${NABE_BUILD_ARCH}/sqlite3.lib)
+        set(SQLite3_LIBRARY ${CMAKE_CURRENT_SOURCE_DIR}/lib/thirdparty/$ENV{NABE_BUILD_ARCH}/sqlite3.lib)
     endif()
 endif()
 
@@ -43,8 +42,8 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-# Minimum Python version required: 3.2 or higher (but not 4.0+)
-find_package(PythonLibs 3.2 REQUIRED)
+#set(NABE_PYTHON_VERSION 3.9) # If you need to manually set this for local build, etc.
+find_package(PythonLibs $ENV{NABE_PYTHON_VERSION} REQUIRED)
 
 find_package(SQLite3 REQUIRED)
 find_package(Threads REQUIRED)

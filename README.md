@@ -15,7 +15,7 @@ You can find builds in the [Releases page](https://github.com/nt-bots/nabe/relea
 ### Requirements
 
 * C++17 compatible compiler
-* Python 3.X and 3.X-dev (currently supporting 3.8 and 3.9)
+* Python 3.X and 3.X-dev (currently supporting 3.8 and 3.9 in the build scripts)
 
 Make sure you have [CMake](https://cmake.org/) installed, and [SQLite3](https://www.sqlite.org) & [Python (3.2 or higher, but not 4.0+)](https://www.python.org/) headers and libraries available.
 

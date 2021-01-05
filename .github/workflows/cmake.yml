@@ -41,7 +41,7 @@ jobs:
       shell: powershell
       continue-on-error: false
       run: |
-          choco install --version=${{matrix.python-version}} --ignore-detected-reboot python
+          choco install --version=${{matrix.python-version}}.x --ignore-detected-reboot python
 
     - name: Enable Developer Command Prompt
       if: runner.os == 'Windows'

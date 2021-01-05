@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(nabe VERSION 2020.01.03)
-
-# This is used for some path names only; you'll probably have to tweak
-# things manually if you're building for a non-x64 arch system.
-set(NABE_BUILD_ARCH x64)
+#set(NABE_BUILD_DATE 2021-01-01) # If you need to manually set this for local build, etc.
+project(nabe VERSION $ENV{NABE_BUILD_DATE})
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -43,7 +40,7 @@ add_executable(${PROJECT_NAME}
                include/thirdparty/source-sdk-stubs/mathlib/math-pfns.cpp
 )
 
-#set(NABE_PYTHON_VERSION 3.9) # If you need to manually set this for local build etc.
+#set(NABE_PYTHON_VERSION 3.9) # If you need to manually set this for local build, etc.
 find_package(PythonLibs $ENV{NABE_PYTHON_VERSION} REQUIRED)
 
 find_package(SQLite3 REQUIRED)

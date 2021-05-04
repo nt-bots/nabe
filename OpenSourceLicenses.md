@@ -32,7 +32,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### [KeyValues](https://github.com/nt-bots/KeyValues) — KeyValues library for C++17:
+### [KeyValues](https://github.com/Spirrwell/KeyValues) — KeyValues library for C++17:
 
 ```
 MIT License
